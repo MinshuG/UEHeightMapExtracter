@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeightMapExtractor", "HeightMapExtractor.csproj", "{80F47B18-131A-4EBA-8DB8-6D292F443538}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CUE4Parse", "L:\Coding Stuff\CVerySharp\FModel\CUE4Parse\CUE4Parse\CUE4Parse.csproj", "{3D8E7C66-8EB5-41F1-BBCF-82D6DE960CB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CUE4Parse-Conversion", "L:\Coding Stuff\CVerySharp\FModel\CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj", "{AD823D64-E116-429B-9CBD-F546553176A3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{80F47B18-131A-4EBA-8DB8-6D292F443538}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80F47B18-131A-4EBA-8DB8-6D292F443538}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80F47B18-131A-4EBA-8DB8-6D292F443538}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80F47B18-131A-4EBA-8DB8-6D292F443538}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D8E7C66-8EB5-41F1-BBCF-82D6DE960CB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D8E7C66-8EB5-41F1-BBCF-82D6DE960CB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D8E7C66-8EB5-41F1-BBCF-82D6DE960CB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D8E7C66-8EB5-41F1-BBCF-82D6DE960CB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD823D64-E116-429B-9CBD-F546553176A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD823D64-E116-429B-9CBD-F546553176A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD823D64-E116-429B-9CBD-F546553176A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD823D64-E116-429B-9CBD-F546553176A3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
