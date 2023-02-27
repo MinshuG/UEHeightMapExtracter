@@ -18,6 +18,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using CUE4Parse_Conversion.Textures.BC;
+using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.UObject;
@@ -29,8 +30,18 @@ class ImageTile
 {
     public FVector Position;
     public MagickImage Image;
+    public int NumSections;
+}
+
+class WeightMapTile: ImageTile
+{
     public int ChannelIndex;
 }
+
+// class HeightMapTile: ImageTile
+// {
+//     
+// }
 
 static class Program
 {
@@ -39,14 +50,14 @@ static class Program
     static List<string> AvailableLayers = new List<string>();
     static FVector imageBounds = new(0);
     static List<ImageTile> heightTiles = new();
-    static Dictionary<string, List<ImageTile>> weightTiles = new();
+    static Dictionary<string, List<WeightMapTile>> weightTiles = new();
     public static Config config;
     public static int ComponentSize = -1;
     public static string WorldName;
 
     static void DoThings(FPackageIndex Actor)
     {
-        var LoadedActor = Actor.Load();
+        var LoadedActor = Actor.Load<UObject>();
         if (LoadedActor != null)// && LoadedActor?.ExportType == "LandscapeStreamingProxy" || LoadedActor?.ExportType == "LevelStreamingAlwaysLoaded")
         {
             var LandscapeComps = LoadedActor.GetOrDefault("LandscapeComponents", Array.Empty<UObject>());
@@ -57,9 +68,9 @@ static class Program
                 // var RelativeLocation  = comp.GetOrDefault("RelativeLocation", new FVector());
                 var NumSections = comp.GetOrDefault("NumSubsections", 1);
                 var pos = new FVector(SectionBaseX, SectionBaseY, 0);
-                pos = pos * 1f / NumSections;
 
                 var ComponentSizeQuads = comp.GetOrDefault("ComponentSizeQuads", 8);
+                var SubsectionSizeQuads = comp.GetOrDefault("SubsectionSizeQuads", 8);
                 if (ComponentSize != -1)
                     Debug.Assert(ComponentSize == ComponentSizeQuads);
                 ComponentSize = ComponentSizeQuads;
@@ -76,7 +87,7 @@ static class Program
                         path.Directory.Create();
                         imagetile.Write(path, MagickFormat.Png);
                     }
-                    heightTiles.Add(new ImageTile { Image = imagetile, ChannelIndex = -1, Position = pos });
+                    heightTiles.Add(new ImageTile { Image = imagetile, Position = pos });
                 }
                 if (config.ExportWeightMaps && comp.TryGetValue<UTexture2D[]>(out var WeightmapTextures, "WeightmapTextures"))
                 {
@@ -102,9 +113,9 @@ static class Program
                         }
 
                         if (!weightTiles.ContainsKey(layerInfo.Name))
-                            weightTiles[layerInfo.Name] = new List<ImageTile>();
+                            weightTiles[layerInfo.Name] = new List<WeightMapTile>();
 
-                        weightTiles[layerInfo.Name].Add(new ImageTile { Image = imagetile, ChannelIndex = WeightMapChannelIndex, Position = pos});
+                        weightTiles[layerInfo.Name].Add(new WeightMapTile() { Image = imagetile, ChannelIndex = WeightMapChannelIndex, Position = pos});
                     }
                 }
                 // break;
@@ -119,14 +130,11 @@ static class Program
             .WriteTo.Console()
             .CreateLogger();
 
-        config = JsonConvert.DeserializeObject<Config>(File.OpenText("config.json").ReadToEnd());
+        config = GetConfig();
+        // ObjectTypeRegistry.RegisterEngine(typeof(ALandscape).Assembly);
 
         var provider = new DefaultFileProvider(config.PaksDirectory, SearchOption.AllDirectories, true, new VersionContainer(config.Game, optionOverrides: config.OptionsOverrides));
         provider.Initialize();
-        provider.MappingsContainer = new FileUsmapTypeMappingsProvider(
-            @"C:\Users\Minshu\Documents\BlenderUmap\mappings\FortniteRelease-23.40-CL-24087481-Android_oo.usmap");
-
-        // provider.SubmitKey(new FGuid(0), new FAesKey("0x0000000000000000000000000000000000000000000000000000000000000000"));
 
         var keysToSubmit = new Dictionary<FGuid, FAesKey>();
 
@@ -297,6 +305,22 @@ static class Program
         return;
     }
 
+    static Config GetConfig()
+    {
+        var file = new FileInfo("config.json");
+        
+        if (!file.Exists)
+        {
+            Log.Information("Config.json not found in working directory.");
+            Console.ReadLine();
+            Environment.Exit(0);
+        }
+
+        var fileHandle = file.OpenText();
+        Log.Information($"Reading Config: {file.FullName}");
+        return JsonConvert.DeserializeObject<Config>(fileHandle.ReadToEnd()) ?? throw new InvalidOperationException();
+    }
+
     private static void ProgressBar(string message, int progress, int tot)
     {
         //draw empty progress bar
@@ -354,8 +378,8 @@ public class Config {
     public Dictionary<string, bool> OptionsOverrides = new Dictionary<string, bool>();
     public List<EncryptionKey> EncryptionKeys = new();
     public string ExportPackage;
-    public string ExportDirectory;
-    public string MappingsFile;
+    public string ExportDirectory = "";
+    public string? MappingsFile;
     public bool ExportWeightMaps = true;
     public bool ExportTiles = true;
 }
