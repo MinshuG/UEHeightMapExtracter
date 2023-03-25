@@ -1,0 +1,22 @@
+﻿{
+  "PaksDirectory": "C:\\Games\\Fortnite\\FortniteGame\\Content\\Paks",
+  "ExportDirectory": "L:\\Coding Stuff\\CVerySharp\\HeightMapExtractor\\publish\\publish",
+  "UEVersion": "GAME_UE5_2",
+  "ExportPackage": "FortniteGame/Content/Athena/Asteria/Maps/Asteria_Terrain.Asteria_Terrain",
+  "MappingsFile": "L:\\path\\to\\mappings.usmap",
+  "ExportWeightMaps": true,
+  "EncryptionKeys": [
+    {
+      "Guid": "00000000000000000000000000000000",
+      "Key": "0xA3278BA7DDD751A75456415A36C3559138E99134D08958C44C2FD29E4BBF342B"
+    },
+    {
+      "Guid": "8C4383893F90632D5516AD37E0CD5173",
+      "FileName": "pakchunk1002-WindowsClient.ucas",
+      "Key": "0x2544c89edf570c61fa8146d9d38d1de29b4946cba1369a4828a230f88898a3c9"
+    }
+  ],
+  "OptionsOverrides": {
+    "key1": false
+  }
+}
