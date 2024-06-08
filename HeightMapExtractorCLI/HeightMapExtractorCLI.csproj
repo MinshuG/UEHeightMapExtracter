@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <RootNamespace>HeightMapExtractor</RootNamespace>
+        <ApplicationIcon>..\res\logo.ico</ApplicationIcon>
+        <Authors>Minshu</Authors>
+        <Company>Minshu</Company>
+        <NeutralLanguage>en</NeutralLanguage>
+        <Version>1.2</Version>
+        <AssemblyVersion>1.2</AssemblyVersion>
+        <FileVersion>1.2</FileVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+      <PlatformTarget>x64</PlatformTarget>
+      <DebugType>none</DebugType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Condition="'$(Configuration)' == 'Release'" Include="Costura.Fody" Version="5.7.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive; compile</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\BlenderUmapCUE4Parse\CUE4Parse-Extensions\CUE4Parse-Extensions.csproj"/>
+        <ProjectReference Include="..\BlenderUmapCUE4Parse\CUE4Parse\CUE4Parse.csproj"/>
+        <ProjectReference Include="..\HeightMapExtractor\HeightMapExtractor.csproj"/>
+    </ItemGroup>
+</Project>

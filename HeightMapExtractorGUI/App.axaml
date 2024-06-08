@@ -1,0 +1,29 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="HeightMapExtractorGUI.App"
+             xmlns:local="using:HeightMapExtractorGUI"
+             xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+  
+             <Application.DataTemplates>
+                 <local:ViewLocator/>
+             </Application.DataTemplates>
+
+             <Application.Styles>
+                 <styling:FluentAvaloniaTheme PreferSystemTheme="True" PreferUserAccentColor="True"/>
+                 <!-- <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/> -->
+                 <!-- this makes the top row invisible -->
+                 <StyleInclude Source="avares://FluentAvalonia.ProgressRing/Styling/Controls/ProgressRing.axaml" />
+                 <!-- <StyleInclude Source="/../Views/MyResource.axaml"/> -->
+             </Application.Styles>
+
+             <Application.Resources>
+                 <!-- <ResourceInclude x:Key="Theme" Source="Views/MyResource.axaml"/> -->
+                 <Thickness x:Key="MenuFlyoutItemThemePaddingNarrow">11,4,11,5</Thickness>
+                 <controls:TextCommandBarFlyout x:Key="TextCommandBarFlyout1" />
+             </Application.Resources>
+</Application>

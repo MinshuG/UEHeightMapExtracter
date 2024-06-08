@@ -137,3 +137,5 @@ _NCrunch*
 [tT]est
 Export
 .vs
+.idea/*
+FodyWeavers.xsd

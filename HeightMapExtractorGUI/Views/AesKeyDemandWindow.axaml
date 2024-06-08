@@ -1,0 +1,65 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:HeightMapExtractorGUI.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="HeightMapExtractorGUI.Views.AesKeyDemandWindow"
+        x:DataType="vm:AesKeyDemandViewModel"
+        Icon="avares://HeightMapExtractorGUI/Assets/logo.ico"
+        Title="Aes Keys" SizeToContent="WidthAndHeight">
+
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock Text="Enter Encryption Keys:" HorizontalAlignment="Left"
+                       Theme="{StaticResource BaseTextBlockStyle}" />
+            <Separator />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Margin="8">
+            <Grid ShowGridLines="False" IsSharedSizeScope="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="Name" Width="Auto" />
+                    <ColumnDefinition SharedSizeGroup="Key" Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <ScrollViewer MaxHeight="350" Padding="5">
+                    <ItemsControl ItemsSource="{Binding AesKeys}" Grid.IsSharedSizeScope="True" Padding="0 0 15 0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0 2.5 0 2.5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="Name" />
+                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition SharedSizeGroup="Key" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                               Text="{Binding Name}" Theme="{StaticResource BodyTextBlockStyle}" />
+                                    <TextBox Grid.Column="2" HorizontalContentAlignment="Left"
+                                             HorizontalAlignment="Stretch" AcceptsReturn="False" AcceptsTab="False"
+                                             Text="{Binding Key}" MinWidth="550"
+                                             ContextFlyout="{StaticResource TextCommandBarFlyout1}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 0">
+            <!-- // fa:ContentDialog -->
+            <!-- Command="{Binding FetchFNButtonCommand}" -->
+            <Button Content="Fetch Fortnite Keys" Click="FNButton_OnClick"  IsVisible="{Binding IsFortnite}" Margin="5 0"/>
+            <Button Content="OK" Click="Button_OnClick" Width="100" HorizontalAlignment="Right" />
+        </StackPanel>
+    </Grid>
+
+</Window>

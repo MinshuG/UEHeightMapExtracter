@@ -1,0 +1,26 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:HeightMapExtractorGUI.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="150"
+        x:Class="HeightMapExtractorGUI.Views.LoadingWindow"
+        Title="Loading"
+        Icon="avares://HeightMapExtractorGUI/Assets/logo.ico"
+        x:DataType="vm:LoadingViewModel"
+        CanResize="True">
+
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <!-- <Image Grid.Row="0" Source="/Assets/logo.ico" Width="100" Height="100" Margin="15"/> -->
+            <!-- <Separator Height="10"/> -->
+            <ProgressBar Grid.Row="1" x:Name="ProgressBarr" Width="150" Height="4" IsIndeterminate="True"
+                         ShowProgressText="True"/>
+            <TextBlock Grid.Row="2" Text="{Binding LoadingText}" HorizontalAlignment="Center" FontSize="10"/>    
+        </Grid>
+    
+</Window>

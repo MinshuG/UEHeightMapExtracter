@@ -1,0 +1,265 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CUE4Parse.UE4.Versions;
+using HeightMapExtractor;
+using HeightMapExtractorGUI.Models;
+using HeightMapExtractorGUI.Views;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
+using Serilog;
+
+namespace HeightMapExtractorGUI.ViewModels;
+
+public partial class ConfigViewModel : ViewModelBase
+{
+    [ObservableProperty] private string? _unrealVersion;
+    [ObservableProperty] private ObservableCollection<string> _directories;
+    [ObservableProperty] private string? _selectedDirectory;
+    [ObservableProperty] private string? _usmapPath;
+
+    [ObservableProperty] private bool _validConfig; // is valid config
+    [ObservableProperty] private bool _configErrorBar;
+    [ObservableProperty] private string _configErrors;
+    
+    private MainWindowViewModel _mainWindowViewModel = null!;
+
+    public ConfigViewModel(MainWindowViewModel mainWindowViewModel)
+    {
+        _mainWindowViewModel = mainWindowViewModel;
+        Directories = new ObservableCollection<string>();
+        _validConfig = IsValidConfig();
+        _configErrorBar = false;
+        _configErrors = "";
+
+#if DEBUG
+        UnrealVersion = "GAME_UE5_4";
+        Directories.Add("C:\\Games\\Fortnite\\FortniteGame\\Content\\Paks");
+        UsmapPath =
+            "C:\\Users\\Minshu\\Documents\\BlenderUmap\\mappings\\++Fortnite+Release-29.10-CL-32391220-Android_oo.usmap";
+#endif
+    }
+
+    public ConfigViewModel()
+    {
+        Debug.Assert(Design.IsDesignMode);
+        Directories = new ObservableCollection<string>();
+        _validConfig = IsValidConfig();
+        _configErrorBar = false;
+        _configErrors = "";
+
+        if (Design.IsDesignMode) // hmm
+        {
+            Directories.Add("C:\\Games\\Fortnite\\FortniteGame\\Content\\Paks");
+            UnrealVersion = "GAME_UE5_4";
+        }
+    }
+
+    [RelayCommand]
+    private async Task AddExtraDirectory()
+    {
+        var folder = await FileFolder.OpenFolderPickerAsync(new FolderPickerOpenOptions()
+            { AllowMultiple = false, Title = "Select a folder" });
+        if (folder != null)
+        {
+            var path = folder.Path.LocalPath;
+            if (Directories.Contains(path))
+            {
+                // TODO: Add logic to display error message
+                return;
+            }
+
+            Directories.Add(folder.Path.LocalPath);
+            SelectedDirectory = folder.Path.LocalPath;
+        }
+
+        return;
+    }
+
+    [RelayCommand]
+    private void RemoveExtraDirectory()
+    {
+        if (SelectedDirectory != null)
+        {
+            // remove the select and select the next one
+            var index = Directories.IndexOf(SelectedDirectory);
+            Directories.Remove(SelectedDirectory);
+            if (index < Directories.Count)
+            {
+                SelectedDirectory = Directories[index];
+            }
+            else if (Directories.Count > 0)
+            {
+                SelectedDirectory = Directories[^1];
+            }
+        }
+    }
+
+    [RelayCommand]
+    private async Task SelectMappings()
+    {
+        var file = await FileFolder.OpenFilePickerAsync(
+            new FilePickerOpenOptions()
+            {
+                Title = "Select a .usmap file",
+                FileTypeFilter = new List<FilePickerFileType>()
+                {
+                    new FilePickerFileType("Unreal Engine Mappings")
+                    {
+                        Patterns = new List<string>() { "*.usmap" }
+                    }
+                }
+            });
+        if (file != null)
+        {
+            UsmapPath = file.Path.LocalPath;
+        }
+    }
+    
+    [RelayCommand]
+        private async Task Done()
+        {
+            if (IsValidConfig())
+            {
+                // var config = ToConfig();
+                // _mainWindowViewModel?.Window.Hide();
+                var loadingviewWindow = new LoadingWindow();
+                loadingviewWindow.ShowInTaskbar = false;
+                
+                loadingviewWindow.ShowDialog(AppHelper.MainWindow).ConfigureAwait(false);
+                var context = (LoadingViewModel)loadingviewWindow.DataContext!;
+                if (Design.IsDesignMode) return;
+
+                var config = ToConfig();
+                context.SetProgressText("Starting...");
+                var fileProvider = MyFileProvider.Create(config);
+                context.SetProgressText("Initializing...");
+                await Task.Run(() =>fileProvider.Initialize()).ConfigureAwait(true);
+                context.SetProgressText(fileProvider.UnloadedVfs.Count > 0 ? $"Found: {fileProvider.UnloadedVfs.Count} Containers" : "No Container Found.");
+                await Task.Delay(300);
+                if (fileProvider.UnloadedVfs.Count > 0)
+                {
+                    // var aesKeys = fileProvider.GetRequiredAesKeys();
+                    context.SetProgressText($"Waiting for AES Key...");
+                    var aesKeyDemandView = new AesKeyDemandWindow();
+
+                    await aesKeyDemandView.ShowDialog(loadingviewWindow).ConfigureAwait(true);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                    if (!(aesKeyDemandView.DataContext as AesKeyDemandViewModel).WasOkClicked)
+                    {
+                        var box = MessageBoxManager
+                            .GetMessageBoxStandard("welp", "sigh", ButtonEnum.Ok);
+                        var  _ = await box.ShowAsync();
+                        fileProvider.Dispose();
+                        loadingviewWindow.Close();
+                        return;
+                    }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                }
+
+                context.SetProgressText("Mounting...");
+                var result = await fileProvider.SubmitKeysAsync2();
+                fileProvider.PostMount();
+                
+                fileProvider.LoadVirtualPaths();
+                var countVars = fileProvider.LoadConsoleVariables();
+
+                context.SetProgressText($"Mounted {result} containers.");
+
+                context.SetProgressText("Populating TreeView...");
+                {
+                    var mainView = new MainAppViewModel();
+                    // await Task.Run(() => mainView.PopulateTreeView(fileProvider.Files));
+                    _mainWindowViewModel.ContentView = mainView;
+                }
+                context.SetProgressText("Done.");
+                loadingviewWindow.Close();
+                await Task.Delay(500);
+            }
+            else
+            {
+                var errors = ValidateConfigAndGetErrors();
+                ConfigErrors = string.Join("\n", errors);
+                ConfigErrorBar = true;
+            }
+        }
+
+        private string[] ValidateConfigAndGetErrors()
+        {
+            var errors = new List<string>();
+            
+            if (UnrealVersion == null)
+            {
+                errors.Add("Unreal Engine version is not selected.");
+            }
+            
+            // if (Game == null)
+            // {
+            //     errors.Add("Game is not selected.");
+            // }
+            
+            if (!string.IsNullOrEmpty(UsmapPath) && !System.IO.File.Exists(UsmapPath))
+            {
+                errors.Add("Mappings file does not exist.");
+            }
+            
+            if (Directories.Count == 0)
+            {
+                errors.Add("No pak directories are added.");
+            }
+            else if (Directories.Any(x => !System.IO.Directory.Exists(x)))
+            {
+                errors.Add("One or more directories do not exist.");
+            }
+
+            return errors.ToArray();
+        }
+        
+        private bool IsValidConfig()
+        {
+            // return true;
+            if (ConfigErrorBar)
+            {
+                var errors = ValidateConfigAndGetErrors();
+                ConfigErrors = string.Join("\n", errors);
+            }
+
+            if (UnrealVersion == null)
+            {
+                return false;
+            }
+            
+            if (!string.IsNullOrEmpty(UsmapPath) && !System.IO.File.Exists(UsmapPath))
+            {
+                return false;
+            }
+
+            if (Directories.Count == 0 || Directories.Any(x => !System.IO.Directory.Exists(x)))
+            {
+                return false;
+            }
+
+            // ConfigErrorBar = false; // if we got here, the config is valid
+            return true;
+        }
+
+        public Config ToConfig()
+        {
+            Trace.Assert(IsValidConfig());
+            return new Config()
+            {
+#pragma warning disable CS8604 // Possible null reference argument.
+                UnrealVersion = (EGame)Enum.Parse(typeof(EGame), UnrealVersion),
+#pragma warning restore CS8604 // Possible null reference argument.
+                Directories = Directories.Select(x => new System.IO.DirectoryInfo(x)).ToArray(),
+                UsmapPath = UsmapPath ?? ""
+            };
+        }
+}

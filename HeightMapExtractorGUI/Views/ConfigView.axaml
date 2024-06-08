@@ -1,0 +1,122 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:HeightMapExtractorGUI.ViewModels"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
+             x:Class="HeightMapExtractorGUI.Views.ConfigView"
+             x:DataType="vm:ConfigViewModel">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:ConfigViewModel/>
+    </Design.DataContext>
+        <Grid ColumnDefinitions="*" Margin="30 5 30 30" IsSharedSizeScope="True" ShowGridLines="False">
+            <!-- UE Version Picker and Game -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" ShowGridLines="False">
+                <Grid Margin="0 5 0 0">
+                    <Grid.ColumnDefinitions >
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Buttons"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+        
+                    <!-- <TextBlock Grid.Row="0" Grid.Column="0"  Text="Game" Margin="0 5 10 0"/> -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="UE Version" />
+        
+                    <!-- <ComboBox Grid.Column="0" Grid.Row="1" Name="Game"  PlaceholderText="Select Game" HorizontalAlignment="Stretch" Margin="0 5 10 0"  -->
+                    <!--           SelectedItem="{Binding Game}" /> -->
+                    <controls:FAComboBox Grid.Column="0" Grid.Row="1" Name="UnrealVersion" PlaceholderText="Select UE Version" HorizontalAlignment="Stretch" Margin="0 5 10 0" SelectedItem="{Binding UnrealVersion}"/>
+                    <!-- <ComboBox Grid.Column="0" Grid.Row="1" Name="UnrealVersion" PlaceholderText="Select UE Version" HorizontalAlignment="Stretch" Margin="0 5 10 0" -->
+                    <!-- SelectedItem="{Binding UnrealVersion}" /> -->
+        
+                    <Separator Grid.Column="2" Grid.Row="1" IsVisible="False"/>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="1" RowDefinitions="Auto Auto *">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Buttons"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Pak Folders" Margin="0,10,0,0" />
+            <controls:FABorder Grid.Row="1" Grid.Column="0" Margin="0 5 10 0"
+                         BorderThickness="0.3" BorderBrush="DarkGray" CornerRadius="6" UseLayoutRounding="True" >
+                <ListBox Name="ExtraDirs" 
+                         BorderThickness="0" Height="110"
+                         ItemsSource="{Binding Directories}" 
+                         SelectedItem="{Binding SelectedDirectory}" />
+            </controls:FABorder>
+
+                <StackPanel Grid.Row="1" Grid.Column="1" Spacing="4">
+                    <Button Content="Add" Margin="0 5 10 0" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Center" 
+                            Command="{Binding AddExtraDirectoryCommand}" />
+                    <Button Content="Remove" Margin="0 5 10 0 " HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Center" 
+                            Command="{Binding RemoveExtraDirectoryCommand}" />
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="2" RowDefinitions="Auto Auto" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition SharedSizeGroup="Buttons"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Mappings (.usmap)" Margin="0,10,0,0" />
+                <TextBox Grid.Row="1" Grid.Column="0" x:Name="MappingsPathField" Margin="0,5,10,0" IsReadOnly="False"
+                        Text="{Binding UsmapPath}" ContextFlyout="{StaticResource TextCommandBarFlyout1}"/>
+                <Button Grid.Row="1" Grid.Column="1" Content="Open"             Margin="0 5 0 0"  HorizontalAlignment="Stretch" 
+                        VerticalAlignment="Center" HorizontalContentAlignment="Center" Command="{Binding SelectMappingsCommand}"/>
+            </Grid>
+
+            <Grid Grid.Row="3" Margin="0 5 10 0">
+                <!-- <TextBlock Text="Row 3"/> -->
+                <!-- <Grid.ColumnDefinitions> -->
+                <!--     <ColumnDefinition Width="*" /> -->
+                <!--     <ColumnDefinition SharedSizeGroup="Buttons"/> -->
+                <!-- </Grid.ColumnDefinitions> -->
+                <!-- <Separator IsVisible="True" ></Separator> -->
+                <TextBlock Text="TODO: Advanced Settings" IsVisible="True"></TextBlock>
+            </Grid>
+
+            <controls:InfoBar Grid.Row="5" Name="ConfigErrorBarElem"
+                        Title="Invalid Config" IsOpen="True" IsIconVisible="True"
+                        IsClosable="False" Severity="Error" IsVisible="{Binding ConfigErrorBar}"
+                        Message="{Binding ConfigErrors}" >
+            </controls:InfoBar>
+
+            <Grid Grid.Row="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Buttons"/>
+                </Grid.ColumnDefinitions>
+
+                <Separator Grid.Column="0" Margin="0 0 10 0"/>
+                <!-- IsEnabled= "{Binding ValidConfig}" -->
+                <Button  Grid.Column="2" Name="DoneButton" Content="Done" 
+                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
+                         Command="{Binding DoneCommand}"/>
+            </Grid>
+        </Grid>
+    
+        <!-- <TreeView x:Name="FileTree" DockPanel.Dock="Left" Items="{Binding Files}"/> -->
+        <!-- <Image x:Name="ImageViewer" Source="{Binding SelectedImage}"/> -->
+</UserControl>

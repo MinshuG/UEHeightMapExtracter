@@ -1,0 +1,3 @@
+[submodule "BlenderUmapCUE4Parse"]
+	path = BlenderUmapCUE4Parse
+	url = https://github.com/MinshuG/BlenderUmapCUE4Parse.git

@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\BlenderUmapCUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj" />
+        <ProjectReference Include="..\BlenderUmapCUE4Parse\CUE4Parse-Extensions\CUE4Parse-Extensions.csproj" />
+        <ProjectReference Include="..\BlenderUmapCUE4Parse\CUE4Parse\CUE4Parse.csproj"/>
+    </ItemGroup>
+</Project>
