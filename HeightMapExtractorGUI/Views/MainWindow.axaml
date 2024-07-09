@@ -7,7 +7,6 @@
         x:Class="HeightMapExtractorGUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="avares://HeightMapExtractorGUI/Assets/logo.ico"
-        Title="HeightMapExtractorGUI - Beta"
         CanResize="True" Width="800" Height="500">
 
     <Design.DataContext>

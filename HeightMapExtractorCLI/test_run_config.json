@@ -1,0 +1,22 @@
+﻿{
+  "PaksDirectory": "F:\\Steam\\steamapps\\common\\Hello Neighbor Pre-Alpha\\HelloNeighbour\\Content\\Paks",
+  "ExportDirectory": "C:\\temp\\HeightMapExporterExp",
+  "UEVersion": "GAME_UE4_8",
+  "ExportPackage": "HelloNeighbour/Content/levels/BaseMap",
+  "MappingsFile": "",
+  "ExportWeightMaps": true,
+  "EncryptionKeys": [
+    {
+      "Guid": "00000000000000000000000000000000",
+      "Key": "0x37A0BC3DC2E01D9EB4923CA266A5701F56A4802347F07927FC3FC25C93B31B50"
+    },
+    {
+      "Guid": "8C4383893F90632D5516AD37E0CD5173",
+      "FileName": "pakchunk1002-WindowsClient.ucas",
+      "Key": "0x2544c89edf570c61fa8146d9d38d1de29b4946cba1369a4828a230f88898a3c9"
+    }
+  ],
+  "OptionsOverrides": {
+    "key1": false
+  }
+}

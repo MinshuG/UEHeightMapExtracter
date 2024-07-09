@@ -25,6 +25,9 @@ public partial class App : Application
             .WriteTo.Console(LogEventLevel.Information)
             .CreateLogger();
         
+        ConsoleHelper.ShowConsole();
+        ConsoleHelper.HideConsole();
+
         AppHelper.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Information;
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

@@ -39,7 +39,7 @@ public partial class AesKeyDemandViewModel: ViewModelBase
         {
             AesKeys.Add(new AesKeysViewModel(key));
         }
-        _isFortnite = provider.UnloadedVfs.Any(x => x.Name.Contains("FortniteGame"));
+        _isFortnite = provider.UnloadedVfs.Any(x => x.Path.Contains("FortniteGame"));
     }
 
     // [RelayCommand]
@@ -108,6 +108,18 @@ public partial class AesKeyDemandViewModel: ViewModelBase
             new AesKeyFormat("xxxxxxxxxxxxxx.pak", "0x2615E4242EF7903730AE011FF6F49DA42B0EF62A101D63928D79A9BB8F245ABB", new FGuid(0)),
             new AesKeyFormat("pakchunk1000.pak", "0xB9D9532FD69B83C2C81B2B56A4444C1951293EB8FD8A8DB74761DB20D1ED177A", new FGuid(069268)),
             new AesKeyFormat("pakchunk1003xxxxxx.pak", "", new FGuid("2CEE3C1783B9E41EB66238BAD32EFF23")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
+            new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
             new AesKeyFormat("xxxxxxxxxxxxxx.pak", "", new FGuid("3486B038CFC458884D3375743DBF5D53")),
             new AesKeyFormat("pakchunk1016.pak", "0x139D8B77682D33330550C91D3298CD5A6107120AF5AA71FE8A5887DA16B6EDD4", new FGuid(90942972))
         };

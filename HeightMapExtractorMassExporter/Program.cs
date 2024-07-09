@@ -106,7 +106,7 @@ static class Program
         Console.ReadLine();
 #endif
     }
-
+   
     static Config GetConfig()
     {
         var file = new FileInfo("config.json");

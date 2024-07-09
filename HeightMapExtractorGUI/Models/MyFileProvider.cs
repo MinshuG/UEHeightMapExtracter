@@ -52,7 +52,6 @@ public sealed class MyFileProvider: DefaultFileProvider
     
     public static void Destroy()
     {
-        
         Instance?.Dispose();
         Instance = null;
     }
@@ -77,8 +76,10 @@ public sealed class MyFileProvider: DefaultFileProvider
     public async Task<int> SubmitKeysAsync2()
     {
         var keysDict = GetAesKeys();
-
-        return await SubmitKeysAsync(keysDict);
+        
+        var ret = await SubmitKeysAsync(keysDict);
+        PostMount();
+        return ret;
     }
 
     private Dictionary<FGuid, FAesKey> GetAesKeys()

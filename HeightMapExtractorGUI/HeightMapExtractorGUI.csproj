@@ -11,8 +11,9 @@
         <Authors>Minshu</Authors>
         <Company>Minshu</Company>
         <NeutralLanguage>en</NeutralLanguage>
-        <AssemblyVersion>1.2</AssemblyVersion>
-        <FileVersion>1.2</FileVersion>
+        <Version>1.3</Version>
+        <AssemblyVersion>1.3</AssemblyVersion>
+        <FileVersion>1.3</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup>

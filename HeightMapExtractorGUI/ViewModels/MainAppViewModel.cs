@@ -241,7 +241,7 @@ public partial class MainAppViewModel: ViewModelBase
     } 
     
     [ObservableProperty] private bool _consoleStatus;
-    [ObservableProperty] private bool _CanOpenConsole; // win only
+    [ObservableProperty] private bool _canOpenConsole; // win only
     [RelayCommand]
     private void ConsoleToggle()
     {

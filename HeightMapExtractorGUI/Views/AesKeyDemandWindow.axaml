@@ -7,7 +7,7 @@
         x:Class="HeightMapExtractorGUI.Views.AesKeyDemandWindow"
         x:DataType="vm:AesKeyDemandViewModel"
         Icon="avares://HeightMapExtractorGUI/Assets/logo.ico"
-        Title="Aes Keys" SizeToContent="WidthAndHeight">
+        Title="Aes Keys" SizeToContent="Width">
 
     <Grid HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="15">
         <Grid.RowDefinitions>
@@ -22,38 +22,36 @@
             <Separator />
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Margin="8">
-            <Grid ShowGridLines="False" IsSharedSizeScope="True">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition SharedSizeGroup="Name" Width="Auto" />
-                    <ColumnDefinition SharedSizeGroup="Key" Width="*" />
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1" ShowGridLines="False" IsSharedSizeScope="True" Margin="0 5 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition SharedSizeGroup="Name" Width="Auto" />
+                <ColumnDefinition SharedSizeGroup="Key" Width="*" />
+            </Grid.ColumnDefinitions>
 
-                <ScrollViewer MaxHeight="350" Padding="5">
-                    <ItemsControl ItemsSource="{Binding AesKeys}" Grid.IsSharedSizeScope="True" Padding="0 0 15 0">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0 2.5 0 2.5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition SharedSizeGroup="Name" />
-                                        <ColumnDefinition Width="10" />
-                                        <ColumnDefinition SharedSizeGroup="Key" />
-                                    </Grid.ColumnDefinitions>
+            <ScrollViewer IsScrollChainingEnabled="False" Padding="5 0">
+                <ItemsControl ItemsSource="{Binding AesKeys}" Grid.IsSharedSizeScope="True" Padding="0 0 15 0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0 2.5 0 2.5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition SharedSizeGroup="Name" />
+                                    <ColumnDefinition Width="10" />
+                                    <ColumnDefinition SharedSizeGroup="Key" />
+                                </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"
-                                               Text="{Binding Name}" Theme="{StaticResource BodyTextBlockStyle}" />
-                                    <TextBox Grid.Column="2" HorizontalContentAlignment="Left"
-                                             HorizontalAlignment="Stretch" AcceptsReturn="False" AcceptsTab="False"
-                                             Text="{Binding Key}" MinWidth="550"
-                                             ContextFlyout="{StaticResource TextCommandBarFlyout1}" />
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Grid>
-        </StackPanel>
-        
+                                <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                           Text="{Binding Name}" Theme="{StaticResource BodyTextBlockStyle}" />
+                                <TextBox Grid.Column="2" HorizontalContentAlignment="Left"
+                                         HorizontalAlignment="Stretch" AcceptsReturn="False" AcceptsTab="False"
+                                         Text="{Binding Key}" MinWidth="550"
+                                         ContextFlyout="{StaticResource TextCommandBarFlyout1}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 0">
             <!-- // fa:ContentDialog -->
             <!-- Command="{Binding FetchFNButtonCommand}" -->
