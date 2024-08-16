@@ -41,7 +41,7 @@ public class HeightMapExtractor
 
     public void ProcessWorld(string worldPath, TreeNode<string>? loadedLevels)
     {
-        var world = _provider.LoadObject<UWorld>(worldPath);
+        if (!_provider.TryLoadObject(worldPath, out UWorld world)) return;
         var worldName = _provider.CompactFilePath(world.GetPathName());
         if (loadedLevels == null)
         {
