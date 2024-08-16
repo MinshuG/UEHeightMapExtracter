@@ -11,10 +11,8 @@ using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
-using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
 using Serilog;
-using Serilog.Events;
 
 namespace HeightMapExtractor;
 
