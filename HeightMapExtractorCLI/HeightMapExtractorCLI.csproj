@@ -13,7 +13,7 @@
         <NeutralLanguage>en</NeutralLanguage>
         <Version>1.2.2</Version>
         <AssemblyVersion>1.2.2</AssemblyVersion>
-        <FileVersion>1.2.3</FileVersion>
+        <FileVersion>1.2.2</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
