@@ -1,4 +1,5 @@
-﻿using CUE4Parse_Conversion;
+﻿using System.Diagnostics;
+using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.UEFormat.Enums;
 using CUE4Parse_Extensions;
@@ -28,6 +29,8 @@ public class HeightMapExtractor
     public string ExportDirectory { get; set; }
     public bool bScanSubLevels;
     
+    private static readonly Stopwatch consoleLogFrequencyController = new Stopwatch();
+    
     private readonly DefaultFileProvider _provider;
 
     public HeightMapExtractor(DefaultFileProvider provider, string exportDirectory, bool scanSubLevels = true)
@@ -35,6 +38,8 @@ public class HeightMapExtractor
         _provider = provider;
         ExportDirectory = exportDirectory;
         bScanSubLevels = scanSubLevels;
+        
+        consoleLogFrequencyController.Start();
     }
 
     public void ProcessWorld(string worldPath, TreeNode<string>? loadedLevels)
@@ -70,12 +75,17 @@ public class HeightMapExtractor
 
             loadedLevels = loadedLevels.AddChild(worldName);
         }
-
+        
         var actors = world.PersistentLevel.Load<ULevel>()!.Actors;
         for (var i = 0; i < actors.Length; i++)
         {
             var actor = actors[i];
-            Utils.ProgressBar(ExportingWorldName, i + 1, actors.Length);
+            if (consoleLogFrequencyController.ElapsedMilliseconds > 1000)
+            {
+                consoleLogFrequencyController.Restart();
+                Utils.ProgressBar(ExportingWorldName, i + 1, actors.Length);
+            }
+            // Utils.ProgressBar(ExportingWorldName, i + 1, actors.Length);
             ProcessActor(actor, loadedLevels);
         }
 
@@ -121,6 +131,31 @@ public class HeightMapExtractor
         }
     }
 
+    public void ProcessRuntimeStreamingData(FStructFallback[] runtimeStreamingData, TreeNode<string> loadedLevels)
+    {
+        for (int i = 0; i < runtimeStreamingData.Length; i++)
+        {
+            var cells = new List<FPackageIndex>();
+            cells.AddRange(runtimeStreamingData[i].GetOrDefault("SpatiallyLoadedCells", Array.Empty<FPackageIndex>()));
+            cells.AddRange(
+                runtimeStreamingData[i].GetOrDefault("NonSpatiallyLoadedCells", Array.Empty<FPackageIndex>()));
+
+            Parallel.ForEach(cells, new ParallelOptions { MaxDegreeOfParallelism = 4 }, cell =>
+            {
+                var cellObj = cell.Load();
+                if (cellObj == null) return;
+                if (cellObj.TryGetValue<UObject>(out var levelStreaming, "LevelStreaming"))
+                {
+                    if (levelStreaming.TryGetValue(out FSoftObjectPath worldAsset, "WorldAsset"))
+                    {
+                        var text = worldAsset.ToString();
+                        ProcessWorld(text, loadedLevels);
+                    }
+                }
+            });
+        }
+    }
+    
     private static readonly Type[] ExportableExports = { typeof(ALandscapeProxy), typeof(UWorld), typeof(AWorldSettings) };
 
     private void ProcessActor(FPackageIndex actor, TreeNode<string> loadedLevels)
@@ -171,18 +206,22 @@ public class HeightMapExtractor
             var components = landscape.LandscapeComponents;
             LandscapeComps[guid].AddRange(components);
         }
-
-        if (actor.TryGetValue(out UObject partition, "WorldPartition")
-            && partition.TryGetValue(out UObject runtimeHash, "RuntimeHash")
-            && runtimeHash.TryGetValue(out FStructFallback[] streamingGrids, "StreamingGrids"))
+        
+        if (   actor.TryGetValue(out UObject partition, "WorldPartition")
+            && partition.TryGetValue(out UObject runtimeHash, "RuntimeHash"))
         {
             if (!bScanSubLevels) return;
-            foreach (var grid in streamingGrids)
+
+            if (runtimeHash.TryGetValue(out FStructFallback[] streamingGrids, "StreamingGrids"))
             {
-                // var gridName = grid.GetOrDefault("GridName", new FName(i.ToString()));
-                // // if (!gridName.Text.StartsWith("MainGrid"))
-                // //     continue;
-                ProcessStreamingGrid(grid, loadedLevels);
+                foreach (var grid in streamingGrids)
+                {
+                    ProcessStreamingGrid(grid, loadedLevels);
+                }
+            }
+
+            if (runtimeHash.TryGetValue(out FStructFallback[] runtimeStreamingData, "RuntimeStreamingData")) {
+                ProcessRuntimeStreamingData(runtimeStreamingData, loadedLevels);
             }
         }
     }

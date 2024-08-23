@@ -1,14 +1,14 @@
 ﻿{
-  "PaksDirectory": "F:\\Steam\\steamapps\\common\\Hello Neighbor Pre-Alpha\\HelloNeighbour\\Content\\Paks",
+  "PaksDirectory": "C:\\Games\\Fortnite\\FortniteGame\\Content\\Paks",
   "ExportDirectory": "C:\\temp\\HeightMapExporterExp",
-  "UEVersion": "GAME_UE4_8",
-  "ExportPackage": "HelloNeighbour/Content/levels/BaseMap",
-  "MappingsFile": "",
+  "UEVersion": "GAME_UE5_5",
+  "ExportPackage": "FortniteGame/Content/Athena/Helios/Maps/Helios_Terrain",
+  "MappingsFile": "C:\\temp\\BlenderUmapExp\\mappings\\++Fortnite+Release-31.00-CL-35447195-Windows_zs.usmap",
   "ExportWeightMaps": true,
   "EncryptionKeys": [
     {
       "Guid": "00000000000000000000000000000000",
-      "Key": "0x37A0BC3DC2E01D9EB4923CA266A5701F56A4802347F07927FC3FC25C93B31B50"
+      "Key": "0xE9C3E4DC78EE73C065552385CAC26C547E1F78D87E6796209BFE92E6AE79F1AD"
     },
     {
       "Guid": "8C4383893F90632D5516AD37E0CD5173",
@@ -17,6 +17,6 @@
     }
   ],
   "OptionsOverrides": {
-    "key1": false
+    "VirtualTextures": false
   }
 }

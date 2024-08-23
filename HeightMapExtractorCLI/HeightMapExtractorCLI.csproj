@@ -11,9 +11,9 @@
         <Authors>Minshu</Authors>
         <Company>Minshu</Company>
         <NeutralLanguage>en</NeutralLanguage>
-        <Version>1.2.2</Version>
-        <AssemblyVersion>1.2.2</AssemblyVersion>
-        <FileVersion>1.2.2</FileVersion>
+        <Version>1.2.3</Version>
+        <AssemblyVersion>1.2.3</AssemblyVersion>
+        <FileVersion>1.2.3</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -22,7 +22,7 @@
       <DebugType>none</DebugType>
     </PropertyGroup>
 
-    <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ItemGroup>
         <Content Include="test_run_config.json">
             <Link>config.json</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -31,10 +31,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Condition="'$(Configuration)' == 'Release'" Include="Costura.Fody" Version="5.7.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive; compile</IncludeAssets>
-        </PackageReference>
+<!--        <PackageReference Condition="'$(Configuration)' == 'Release'" Include="Costura.Fody" Version="5.7.0">-->
+<!--          <PrivateAssets>all</PrivateAssets>-->
+<!--          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive; compile</IncludeAssets>-->
+<!--        </PackageReference>-->
     </ItemGroup>
 
     <ItemGroup>

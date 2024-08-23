@@ -1,4 +1,5 @@
-﻿using CUE4Parse_Conversion;
+﻿using System.Diagnostics;
+using CUE4Parse_Conversion;
 using CUE4Parse_Extensions;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
@@ -24,16 +25,18 @@ static class Program
 {
     public static Config config;
 
-    private static ILogger Log = Serilog.Log.ForContext("SourceContext", "Program.cs");
     public static string ExportingWorldName { get; set; }
+    
+    static Stopwatch PerformanceTimer = new();
 
     static void Main(string[] args)
     {
+        PerformanceTimer.Start();
         Utils.RegisterAssembly();
-
+        
         var ls = new LoggingLevelSwitch();
 
-        Serilog.Log.Logger = new LoggerConfiguration()
+        Log.Logger = new LoggerConfiguration()
             .MinimumLevel.ControlledBy(ls)
             .WriteTo.Console()
             .CreateLogger();
@@ -41,7 +44,6 @@ static class Program
         ls.MinimumLevel = LogEventLevel.Information;
         Log.Information("Starting HeightMap Exporter...");
         config = GetConfig();
-        // ObjectTypeRegistry.RegisterEngine(typeof(ALandscape).Assembly);
 
         var provider = new DefaultFileProvider(config.PaksDirectory, SearchOption.AllDirectories, true,
             new VersionContainer(config.Game, optionOverrides: config.OptionsOverrides));
@@ -95,13 +97,18 @@ static class Program
 
         if (extractor.LandscapeComps.Count == 0)
         {
+            Log.Information("Time taken: {0}s", PerformanceTimer.Elapsed.TotalSeconds);
             Log.Information("No landscapes found. Press any key to exit.");
 #if !DEBUG
             Console.ReadLine();
 #endif
             return;
         }
+        var saveTimer = Stopwatch.StartNew();
         extractor.Save();
+        saveTimer.Stop();
+        Log.Information("Time taken to save: {0}s", saveTimer.Elapsed.TotalSeconds);
+        Log.Information("Time taken: {0}s", PerformanceTimer.Elapsed.TotalSeconds);
 #if !DEBUG
         Console.ReadLine();
 #endif
