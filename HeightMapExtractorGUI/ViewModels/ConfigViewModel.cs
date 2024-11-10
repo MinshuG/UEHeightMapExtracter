@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Versions;
 using HeightMapExtractor;
 using HeightMapExtractorGUI.Models;
@@ -24,6 +25,9 @@ public partial class ConfigViewModel : ViewModelBase
     [ObservableProperty] private ObservableCollection<string> _directories;
     [ObservableProperty] private string? _selectedDirectory;
     [ObservableProperty] private string? _usmapPath;
+    [ObservableProperty] private bool _bOverridePackageVer; 
+    [ObservableProperty] private string? _ue5Ver;
+    [ObservableProperty] private string? _ue4Ver;
 
     [ObservableProperty] private bool _validConfig; // is valid config
     [ObservableProperty] private bool _configErrorBar;
@@ -38,12 +42,15 @@ public partial class ConfigViewModel : ViewModelBase
         _validConfig = IsValidConfig();
         _configErrorBar = false;
         _configErrors = "";
+        _bOverridePackageVer = false;
 
 #if DEBUG
-        UnrealVersion = "GAME_UE5_4";
-        Directories.Add("C:\\Games\\Fortnite\\FortniteGame\\Content\\Paks");
+        UnrealVersion = "GAME_UE5_0";
+        Directories.Add("F:\\Fortnite Versions\\20.00\\FortniteGame\\Content\\Paks");
         UsmapPath =
-            "C:\\Users\\Minshu\\Documents\\BlenderUmap\\mappings\\++Fortnite+Release-29.10-CL-32391220-Android_oo.usmap";
+            "C:\\Users\\Minshu\\Downloads\\++Fortnite+Release-20.00-CL-19532288-Windows_oo.usmap";
+        _ue4Ver = "522 - CORRECT_LICENSEE_FLAG";
+        _ue5Ver = "1003 - OPTIONAL_RESOURCES";
 #endif
     }
 
@@ -218,6 +225,13 @@ public partial class ConfigViewModel : ViewModelBase
             {
                 errors.Add("One or more directories do not exist.");
             }
+            else if (BOverridePackageVer) 
+            {
+                if (Ue4Ver == null || Ue5Ver == null)
+                {
+                    errors.Add("UE4 or UE5 version is not selected. Please select a version or disable package version override.");
+                }
+            }
 
             return errors.ToArray();
         }
@@ -246,6 +260,14 @@ public partial class ConfigViewModel : ViewModelBase
                 return false;
             }
 
+            if (BOverridePackageVer)
+            {
+                if (Ue4Ver == null || Ue5Ver == null)
+                {
+                    return false;
+                }
+            }
+
             // ConfigErrorBar = false; // if we got here, the config is valid
             return true;
         }
@@ -253,10 +275,25 @@ public partial class ConfigViewModel : ViewModelBase
         public Config ToConfig()
         {
             Trace.Assert(IsValidConfig());
+            VersionContainer version;
+            if (BOverridePackageVer)
+            {
+                var UE4Ver = Ue4Ver == "AUTOMATIC_VERSION" ? "0" : Ue4Ver.Split(" - ")[0];
+                var UE5Ver = Ue5Ver == "AUTOMATIC_VERSION" ? "0" : Ue5Ver.Split(" - ")[0];
+                
+                var v = new FPackageFileVersion(int.Parse(UE4Ver), int.Parse(UE5Ver));
+                version = new VersionContainer((EGame)Enum.Parse(typeof(EGame), UnrealVersion!),
+                    ETexturePlatform.DesktopMobile, v);
+            }
+            else
+            {
+                version = new VersionContainer((EGame)Enum.Parse(typeof(EGame), UnrealVersion));
+            }
+            
             return new Config()
             {
 #pragma warning disable CS8604 // Possible null reference argument.
-                UnrealVersion = (EGame)Enum.Parse(typeof(EGame), UnrealVersion),
+                Version = version,
 #pragma warning restore CS8604 // Possible null reference argument.
                 Directories = Directories.Select(x => new System.IO.DirectoryInfo(x)).ToArray(),
                 UsmapPath = UsmapPath ?? ""

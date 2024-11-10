@@ -57,7 +57,7 @@ public sealed class MyFileProvider: DefaultFileProvider
     }
 
     private MyFileProvider(Config config) 
-        : base(config.Directories[0], config.Directories.Skip(1).ToArray(), SearchOption.AllDirectories, true, new VersionContainer(config.UnrealVersion))
+        : base(config.Directories[0], config.Directories.Skip(1).ToArray(), SearchOption.AllDirectories, true, config.Version)
     {
         Trace.Assert(Instance == null);
         // Instance = this;
@@ -157,28 +157,4 @@ public sealed class MyFileProvider: DefaultFileProvider
         base.Dispose();
         Instance = null;
     }
-
-    internal static UObject StolenConstructObject(UStruct? struc)
-    {
-        UObject? obj = null;
-        var current = struc;
-        while (current != null) // Traverse up until a known one is found
-        {
-            if (current is UClass scriptClass)
-            {
-                // We know this is a class defined in code at this point
-                obj = scriptClass.ConstructObject();
-                if (obj != null)
-                    break;
-            }
-
-            current = current.SuperStruct?.Load<UStruct>();
-        }
-
-        obj ??= new UObject();
-        obj.Class = struc;
-        obj.Flags |= EObjectFlags.RF_WasLoaded;
-        return obj;
-    }
-    
 }

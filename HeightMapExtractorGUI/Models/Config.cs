@@ -33,7 +33,7 @@ public class AesKeyFormat
 
 public class Config
 {
-    public EGame UnrealVersion { get; set; } = EGame.GAME_UE5_LATEST;
+    public VersionContainer Version { get; set; } = new VersionContainer();
     public DirectoryInfo[] Directories { get; set; } = Array.Empty<DirectoryInfo>();
     public string UsmapPath { get; set; } = string.Empty;
     public AesKeyFormat[] AesKeys { get; set; } = Array.Empty<AesKeyFormat>();

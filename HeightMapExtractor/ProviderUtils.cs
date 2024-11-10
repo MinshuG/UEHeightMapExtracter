@@ -76,7 +76,7 @@ public static class ProviderUtils
             if (current is UClass scriptClass)
             {
                 // We know this is a class defined in code at this point
-                obj = scriptClass.ConstructObject();
+                obj = scriptClass.ConstructObject(EObjectFlags.RF_NoFlags);
                 if (obj != null)
                     break;
             }

@@ -93,7 +93,18 @@
                 <!--     <ColumnDefinition SharedSizeGroup="Buttons"/> -->
                 <!-- </Grid.ColumnDefinitions> -->
                 <!-- <Separator IsVisible="True" ></Separator> -->
-                <TextBlock Text="TODO: Advanced Settings" IsVisible="True"></TextBlock>
+                <StackPanel>
+                    <TextBlock Text="Advanced Settings" IsVisible="True" Padding="0 10 0 5"></TextBlock>
+                    <CheckBox Content="Override Package Versions" IsChecked="{Binding BOverridePackageVer}"></CheckBox>
+                    
+                    <TextBlock Text="Package Version: " Padding="0 0 5 0" IsVisible="{Binding BOverridePackageVer}"></TextBlock>
+                    <WrapPanel IsVisible="{Binding BOverridePackageVer}">
+                        <!-- ReSharper disable once InconsistentNaming -->
+                        <controls:FAComboBox Grid.Column="0" Grid.Row="1" Name="UE4ObjectVersion" PlaceholderText="Select UE4 Version" HorizontalAlignment="Stretch" Margin="0 5 10 0" SelectedItem="{Binding Ue4Ver, Mode=TwoWay}"/>
+                        <!-- ReSharper disable once InconsistentNaming -->
+                        <controls:FAComboBox Grid.Column="0" Grid.Row="1" Name="UE5ObjectVersion" PlaceholderText="Select UE5 Version" HorizontalAlignment="Stretch" Margin="0 5 10 0" SelectedItem="{Binding Ue5Ver, Mode=TwoWay}"/>
+                    </WrapPanel>
+                </StackPanel>
             </Grid>
 
             <controls:InfoBar Grid.Row="5" Name="ConfigErrorBarElem"
