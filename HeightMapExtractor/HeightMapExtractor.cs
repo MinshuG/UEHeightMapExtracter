@@ -44,7 +44,11 @@ public class HeightMapExtractor
 
     public void ProcessWorld(string worldPath, TreeNode<string>? loadedLevels)
     {
-        if (!_provider.TryLoadObject(worldPath, out UWorld world)) return;
+        if (!_provider.TryLoadPackage(worldPath, out IPackage worldpkg)) return;
+
+        var world = worldpkg.LoadExportOfType<UWorld>();
+        if (world == null) return;
+
         var worldName = _provider.CompactFilePath(world.GetPathName());
         if (loadedLevels == null)
         {
@@ -155,8 +159,8 @@ public class HeightMapExtractor
             });
         }
     }
-    
-    private static readonly Type[] ExportableExports = { typeof(ALandscapeProxy), typeof(UWorld), typeof(AWorldSettings) };
+
+    private static readonly Type[] ExportableExports = [typeof(ALandscapeProxy), typeof(UWorld), typeof(AWorldSettings)];
 
     private void ProcessActor(FPackageIndex actor, TreeNode<string> loadedLevels)
     {

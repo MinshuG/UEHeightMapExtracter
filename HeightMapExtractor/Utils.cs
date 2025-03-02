@@ -67,7 +67,8 @@ public static class Utils
         Console.WriteLine();
         return result;
     }
-
+    
+    
     public static void RegisterAssembly()
     {
         ObjectTypeRegistry.RegisterEngine(typeof(AFortWorldSettings).Assembly);

@@ -11,9 +11,9 @@
         <Authors>Minshu</Authors>
         <Company>Minshu</Company>
         <NeutralLanguage>en</NeutralLanguage>
-        <Version>1.4.0</Version>
-        <AssemblyVersion>1.4.0</AssemblyVersion>
-        <FileVersion>1.4.0</FileVersion>
+        <Version>1.4.2</Version>
+        <AssemblyVersion>1.4.2</AssemblyVersion>
+        <FileVersion>1.4.2</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -56,5 +56,9 @@
     <ItemGroup>
         <ProjectReference Include="..\BlenderUmapCUE4Parse\CUE4Parse\CUE4Parse.csproj"/>
         <ProjectReference Include="..\HeightMapExtractor\HeightMapExtractor.csproj" />
+<!--        <ProjectReference Include="..\Costura\src\Costura.Fody\Costura.Fody.csproj" >-->
+<!--            <PrivateAssets>all</PrivateAssets>-->
+<!--            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>-->
+<!--        </ProjectReference>-->
     </ItemGroup>
 </Project>

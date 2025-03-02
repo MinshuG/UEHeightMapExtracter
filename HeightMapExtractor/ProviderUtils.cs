@@ -89,4 +89,38 @@ public static class ProviderUtils
         obj.Flags |= EObjectFlags.RF_WasLoaded;
         return obj;
     }
+
+    public static T? LoadExportOfType<T>(this IPackage pkg) where T : UObject
+    {
+        if (pkg is Package package)
+        {
+            var exports = package.ExportMap;
+            for (var i = 0; i < exports.Length; i++)
+            {
+                var export = exports[i];
+                if (IsExportTypeCompatible(package, export, [typeof(T)]))
+                {
+                    return pkg.ExportsLazy[i].Value as T;
+                }
+            }
+        }
+        else if (pkg is IoPackage ioPackage)
+        {
+            var exports = ioPackage.ExportMap;
+            for (var i = 0; i < exports.Length; i++)
+            {
+                var export = exports[i];
+                if (IsExportTypeCompatible(ioPackage, export, [typeof(T)]))
+                {
+                    return pkg.ExportsLazy[i].Value as T;
+                }
+            }
+        }
+        else
+        {
+            throw new NotImplementedException();
+        }
+
+        throw new KeyNotFoundException("No export of type " + typeof(T).Name + " found");
+    }
 }
