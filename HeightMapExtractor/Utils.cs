@@ -71,6 +71,6 @@ public static class Utils
     
     public static void RegisterAssembly()
     {
-        ObjectTypeRegistry.RegisterEngine(typeof(AFortWorldSettings).Assembly);
+        // ObjectTypeRegistry.RegisterEngine(typeof(AFortWorldSettings).Assembly);
     }
 }

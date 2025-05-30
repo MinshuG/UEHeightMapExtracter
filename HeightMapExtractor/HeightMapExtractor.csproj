@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\BlenderUmapCUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj" />
-        <ProjectReference Include="..\BlenderUmapCUE4Parse\CUE4Parse-Extensions\CUE4Parse-Extensions.csproj" />
-        <ProjectReference Include="..\BlenderUmapCUE4Parse\CUE4Parse\CUE4Parse.csproj"/>
+        <ProjectReference Include="..\CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj" />
+<!--        <ProjectReference Include="..\CUE4Parse\CUE4Parse-Extensions\CUE4Parse-Extensions.csproj" />-->
+        <ProjectReference Include="..\CUE4Parse\CUE4Parse\CUE4Parse.csproj"/>
     </ItemGroup>
 </Project>

@@ -223,7 +223,7 @@ public partial class ConfigViewModel : ViewModelBase
             }
             else if (Directories.Any(x => !System.IO.Directory.Exists(x)))
             {
-                errors.Add("One or more directories do not exist.");
+                errors.Add("One or more pak folders do not exist.");
             }
             else if (BOverridePackageVer) 
             {

@@ -54,7 +54,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\BlenderUmapCUE4Parse\CUE4Parse\CUE4Parse.csproj"/>
+        <ProjectReference Include="..\CUE4Parse\CUE4Parse\CUE4Parse.csproj"/>
         <ProjectReference Include="..\HeightMapExtractor\HeightMapExtractor.csproj" />
 <!--        <ProjectReference Include="..\Costura\src\Costura.Fody\Costura.Fody.csproj" >-->
 <!--            <PrivateAssets>all</PrivateAssets>-->
