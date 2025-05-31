@@ -38,6 +38,7 @@ public sealed class MyFileProvider: DefaultFileProvider
         else {
             ZlibHelper.Initialize(ZlibHelper.DLL_NAME);    
         }
+        OodleHelper.Initialize();
         var provider = new MyFileProvider(config);
         Instance = provider;
         return provider;

@@ -241,7 +241,12 @@ public class HeightMapExtractor
 
         Log.Information("Exporting Heightmaps...");
 
-        var exporterOptions = new ExporterOptions() { ExportMaterials = false , MeshFormat = EMeshFormat.UEFormat, CompressionFormat = EFileCompressionFormat.ZSTD };
+        var exporterOptions = new ExporterOptions()
+        {
+            ExportMaterials = false , 
+            MeshFormat = EMeshFormat.UEFormat, 
+            CompressionFormat = EFileCompressionFormat.ZSTD
+        };
         var dir = new DirectoryInfo(ExportDirectory);
         dir.Create();
         foreach (var (key, comps) in LandscapeComps)
@@ -255,7 +260,11 @@ public class HeightMapExtractor
             // ls.MinimumLevel = LogEventLevel.Information;
 
             Log.Information("Converting Landscape: {0}", landscape.Name);
-            var exporter = new LandscapeExporter(landscape, loadedComps!, exporterOptions, ELandscapeExportFlags.Heightmap | ELandscapeExportFlags.Weightmap);
+            var exporter = new LandscapeExporter(landscape, 
+                loadedComps!, 
+                exporterOptions, 
+                ELandscapeExportFlags.Heightmap | ELandscapeExportFlags.Weightmap
+                );
             Log.Information("Writing Landscape to disk");
             exporter.TryWriteToDir(dir, out var _, out var _2);
         }

@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CUE4Parse.Compression;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Versions;
 using HeightMapExtractor;
@@ -45,12 +46,12 @@ public partial class ConfigViewModel : ViewModelBase
         _bOverridePackageVer = false;
 
 #if DEBUG
-        UnrealVersion = "GAME_UE5_0";
-        Directories.Add("F:\\Fortnite Versions\\20.00\\FortniteGame\\Content\\Paks");
+        UnrealVersion = "GAME_UE5_6";
+        Directories.Add("H:\\Games\\Fortnite2\\FortniteGame\\Content\\Paks");
         UsmapPath =
-            "C:\\Users\\Minshu\\Downloads\\++Fortnite+Release-20.00-CL-19532288-Windows_oo.usmap";
-        _ue4Ver = "522 - CORRECT_LICENSEE_FLAG";
-        _ue5Ver = "1003 - OPTIONAL_RESOURCES";
+            "C:\\Users\\Minshu\\Downloads\\35.20-42911808-Windows_oo.usmap";
+        // _ue4Ver = "522 - CORRECT_LICENSEE_FLAG";
+        // _ue5Ver = "1003 - OPTIONAL_RESOURCES";
 #endif
     }
 
@@ -129,174 +130,189 @@ public partial class ConfigViewModel : ViewModelBase
             UsmapPath = file.Path.LocalPath;
         }
     }
-    
+
     [RelayCommand]
-        private async Task Done()
+    private async Task Done()
+    {
+        if (IsValidConfig())
         {
-            if (IsValidConfig())
+            // var config = ToConfig();
+            // _mainWindowViewModel?.Window.Hide();
+            var loadingviewWindow = new LoadingWindow();
+            loadingviewWindow.ShowInTaskbar = false;
+
+            loadingviewWindow.ShowDialog(AppHelper.MainWindow).ConfigureAwait(false);
+            var context = (LoadingViewModel)loadingviewWindow.DataContext!;
+            if (Design.IsDesignMode) return;
+
+            var config = ToConfig();
+            context.SetProgressText("Starting...");
+
+            MyFileProvider fileProvider;
+            try
             {
-                // var config = ToConfig();
-                // _mainWindowViewModel?.Window.Hide();
-                var loadingviewWindow = new LoadingWindow();
-                loadingviewWindow.ShowInTaskbar = false;
-                
-                loadingviewWindow.ShowDialog(AppHelper.MainWindow).ConfigureAwait(false);
-                var context = (LoadingViewModel)loadingviewWindow.DataContext!;
-                if (Design.IsDesignMode) return;
-
-                var config = ToConfig();
-                context.SetProgressText("Starting...");
-                var fileProvider = MyFileProvider.Create(config);
-                context.SetProgressText("Initializing...");
-                await Task.Run(() =>fileProvider.Initialize()).ConfigureAwait(true);
-                context.SetProgressText(fileProvider.UnloadedVfs.Count > 0 ? $"Found: {fileProvider.UnloadedVfs.Count} Containers" : "No Container Found.");
-                await Task.Delay(300);
-                if (fileProvider.UnloadedVfs.Count > 0)
-                {
-                    // var aesKeys = fileProvider.GetRequiredAesKeys();
-                    context.SetProgressText($"Waiting for AES Key...");
-                    var aesKeyDemandView = new AesKeyDemandWindow();
-
-                    await aesKeyDemandView.ShowDialog(loadingviewWindow).ConfigureAwait(true);
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-                    if (!(aesKeyDemandView.DataContext as AesKeyDemandViewModel).WasOkClicked)
-                    {
-                        var box = MessageBoxManager
-                            .GetMessageBoxStandard("welp", "sigh", ButtonEnum.Ok);
-                        var  _ = await box.ShowAsync();
-                        fileProvider.Dispose();
-                        loadingviewWindow.Close();
-                        return;
-                    }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-                }
-
-                context.SetProgressText("Mounting...");
-                var result = await fileProvider.SubmitKeysAsync2();
-                fileProvider.PostMount();
-                
-                fileProvider.LoadVirtualPaths();
-                var countVars = fileProvider.LoadConsoleVariables();
-
-                context.SetProgressText($"Mounted {result} containers.");
-
-                context.SetProgressText("Populating TreeView...");
-                {
-                    var mainView = new MainAppViewModel();
-                    // await Task.Run(() => mainView.PopulateTreeView(fileProvider.Files));
-                    _mainWindowViewModel.ContentView = mainView;
-                }
-                context.SetProgressText("Done.");
+                fileProvider = MyFileProvider.Create(config);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to create file provider");
+                var box = MessageBoxManager
+                    .GetMessageBoxStandard("Error", "Failed to create file provider. Check logs for details.", ButtonEnum.Ok);
+                var _ = await box.ShowAsync();
                 loadingviewWindow.Close();
-                await Task.Delay(500);
+                return;
             }
-            else
-            {
-                var errors = ValidateConfigAndGetErrors();
-                ConfigErrors = string.Join("\n", errors);
-                ConfigErrorBar = true;
-            }
-        }
 
-        private string[] ValidateConfigAndGetErrors()
-        {
-            var errors = new List<string>();
-            
-            if (UnrealVersion == null)
+            context.SetProgressText("Initializing...");
+            await Task.Run(() =>fileProvider.Initialize()).ConfigureAwait(true);
+            context.SetProgressText(fileProvider.UnloadedVfs.Count > 0 ? $"Found: {fileProvider.UnloadedVfs.Count} Containers" : "No Container Found.");
+            await Task.Delay(300);
+            if (fileProvider.UnloadedVfs.Count > 0)
             {
-                errors.Add("Unreal Engine version is not selected.");
-            }
-            
-            // if (Game == null)
-            // {
-            //     errors.Add("Game is not selected.");
-            // }
-            
-            if (!string.IsNullOrEmpty(UsmapPath) && !System.IO.File.Exists(UsmapPath))
-            {
-                errors.Add("Mappings file does not exist.");
-            }
-            
-            if (Directories.Count == 0)
-            {
-                errors.Add("No pak directories are added.");
-            }
-            else if (Directories.Any(x => !System.IO.Directory.Exists(x)))
-            {
-                errors.Add("One or more pak folders do not exist.");
-            }
-            else if (BOverridePackageVer) 
-            {
-                if (Ue4Ver == null || Ue5Ver == null)
+                // var aesKeys = fileProvider.GetRequiredAesKeys();
+                context.SetProgressText($"Waiting for AES Key...");
+                var aesKeyDemandView = new AesKeyDemandWindow();
+
+                await aesKeyDemandView.ShowDialog(loadingviewWindow).ConfigureAwait(true);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                if (!(aesKeyDemandView.DataContext as AesKeyDemandViewModel).WasOkClicked)
                 {
-                    errors.Add("UE4 or UE5 version is not selected. Please select a version or disable package version override.");
+                    var box = MessageBoxManager
+                        .GetMessageBoxStandard("welp", "sigh", ButtonEnum.Ok);
+                    var  _ = await box.ShowAsync();
+                    fileProvider.Dispose();
+                    loadingviewWindow.Close();
+                    return;
                 }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             }
 
-            return errors.ToArray();
+            context.SetProgressText("Mounting...");
+            var result = await fileProvider.SubmitKeysAsync2();
+            fileProvider.PostMount();
+            
+            fileProvider.LoadVirtualPaths();
+            var countVars = fileProvider.LoadConsoleVariables();
+
+            context.SetProgressText($"Mounted {result} containers.");
+
+            context.SetProgressText("Populating TreeView...");
+            {
+                var mainView = new MainAppViewModel();
+                // await Task.Run(() => mainView.PopulateTreeView(fileProvider.Files));
+                _mainWindowViewModel.ContentView = mainView;
+            }
+            context.SetProgressText("Done.");
+            loadingviewWindow.Close();
+            await Task.Delay(500);
+        }
+        else
+        {
+            var errors = ValidateConfigAndGetErrors();
+            ConfigErrors = string.Join("\n", errors);
+            ConfigErrorBar = true;
+        }
+    }
+
+    private string[] ValidateConfigAndGetErrors()
+    {
+        var errors = new List<string>();
+        
+        if (UnrealVersion == null)
+        {
+            errors.Add("Unreal Engine version is not selected.");
         }
         
-        private bool IsValidConfig()
+        // if (Game == null)
+        // {
+        //     errors.Add("Game is not selected.");
+        // }
+        
+        if (!string.IsNullOrEmpty(UsmapPath) && !System.IO.File.Exists(UsmapPath))
         {
-            // return true;
-            if (ConfigErrorBar)
+            errors.Add("Mappings file does not exist.");
+        }
+        
+        if (Directories.Count == 0)
+        {
+            errors.Add("No pak directories are added.");
+        }
+        else if (Directories.Any(x => !System.IO.Directory.Exists(x)))
+        {
+            errors.Add("One or more pak folders do not exist.");
+        }
+        else if (BOverridePackageVer) 
+        {
+            if (Ue4Ver == null || Ue5Ver == null)
             {
-                var errors = ValidateConfigAndGetErrors();
-                ConfigErrors = string.Join("\n", errors);
+                errors.Add("UE4 or UE5 version is not selected. Please select a version or disable package version override.");
             }
-
-            if (UnrealVersion == null)
-            {
-                return false;
-            }
-            
-            if (!string.IsNullOrEmpty(UsmapPath) && !System.IO.File.Exists(UsmapPath))
-            {
-                return false;
-            }
-
-            if (Directories.Count == 0 || Directories.Any(x => !System.IO.Directory.Exists(x)))
-            {
-                return false;
-            }
-
-            if (BOverridePackageVer)
-            {
-                if (Ue4Ver == null || Ue5Ver == null)
-                {
-                    return false;
-                }
-            }
-
-            // ConfigErrorBar = false; // if we got here, the config is valid
-            return true;
         }
 
-        public Config ToConfig()
+        return errors.ToArray();
+    }
+    
+    private bool IsValidConfig()
+    {
+        // return true;
+        if (ConfigErrorBar)
         {
-            Trace.Assert(IsValidConfig());
-            VersionContainer version;
-            if (BOverridePackageVer)
+            var errors = ValidateConfigAndGetErrors();
+            ConfigErrors = string.Join("\n", errors);
+        }
+
+        if (UnrealVersion == null)
+        {
+            return false;
+        }
+        
+        if (!string.IsNullOrEmpty(UsmapPath) && !System.IO.File.Exists(UsmapPath))
+        {
+            return false;
+        }
+
+        if (Directories.Count == 0 || Directories.Any(x => !System.IO.Directory.Exists(x)))
+        {
+            return false;
+        }
+
+        if (BOverridePackageVer)
+        {
+            if (Ue4Ver == null || Ue5Ver == null)
             {
-                var UE4Ver = Ue4Ver == "AUTOMATIC_VERSION" ? "0" : Ue4Ver.Split(" - ")[0];
-                var UE5Ver = Ue5Ver == "AUTOMATIC_VERSION" ? "0" : Ue5Ver.Split(" - ")[0];
-                
-                var v = new FPackageFileVersion(int.Parse(UE4Ver), int.Parse(UE5Ver));
-                version = new VersionContainer((EGame)Enum.Parse(typeof(EGame), UnrealVersion!),
-                    ETexturePlatform.DesktopMobile, v);
+                return false;
             }
-            else
-            {
-                version = new VersionContainer((EGame)Enum.Parse(typeof(EGame), UnrealVersion));
-            }
+        }
+
+        // ConfigErrorBar = false; // if we got here, the config is valid
+        return true;
+    }
+
+    public Config ToConfig()
+    {
+        Trace.Assert(IsValidConfig());
+        VersionContainer version;
+        if (BOverridePackageVer)
+        {
+            var UE4Ver = Ue4Ver == "AUTOMATIC_VERSION" ? "0" : Ue4Ver.Split(" - ")[0];
+            var UE5Ver = Ue5Ver == "AUTOMATIC_VERSION" ? "0" : Ue5Ver.Split(" - ")[0];
             
-            return new Config()
-            {
+            var v = new FPackageFileVersion(int.Parse(UE4Ver), int.Parse(UE5Ver));
+            version = new VersionContainer((EGame)Enum.Parse(typeof(EGame), UnrealVersion!),
+                ETexturePlatform.DesktopMobile, v);
+        }
+        else
+        {
+            version = new VersionContainer((EGame)Enum.Parse(typeof(EGame), UnrealVersion));
+        }
+        
+        return new Config()
+        {
 #pragma warning disable CS8604 // Possible null reference argument.
-                Version = version,
+            Version = version,
 #pragma warning restore CS8604 // Possible null reference argument.
-                Directories = Directories.Select(x => new System.IO.DirectoryInfo(x)).ToArray(),
-                UsmapPath = UsmapPath ?? ""
-            };
-        }
+            Directories = Directories.Select(x => new System.IO.DirectoryInfo(x)).ToArray(),
+            UsmapPath = UsmapPath ?? ""
+        };
+    }
 }

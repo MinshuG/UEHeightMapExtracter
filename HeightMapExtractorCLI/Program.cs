@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.MappingsProvider;
@@ -34,6 +35,18 @@ static class Program
         ls.MinimumLevel = LogEventLevel.Information;
         Log.Information("Starting HeightMap Exporter...");
         config = GetConfig();
+
+        OodleHelper.Initialize();
+
+        if (!ZlibHelper.DownloadDll())
+        {
+            Log.Error("Failed to download zlib-ng2.dll");
+            Log.Error("Please download it from {0} and place it in the same directory as this executable or working directory (export directory)", ZlibHelper.DOWNLOAD_URL);
+        }
+        else
+        {
+            ZlibHelper.Initialize(ZlibHelper.DLL_NAME);
+        }
 
         var provider = new DefaultFileProvider(config.PaksDirectory, SearchOption.AllDirectories, true,
             new VersionContainer(config.Game, optionOverrides: config.OptionsOverrides));
