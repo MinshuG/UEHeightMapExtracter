@@ -7,6 +7,7 @@ using HeightMapExtractorGUI.ViewModels;
 using HeightMapExtractorGUI.Views;
 using Serilog;
 using Serilog.Events;
+using Utils = HeightMapExtractor.Utils;
 
 namespace HeightMapExtractorGUI;
 
@@ -22,13 +23,13 @@ public partial class App : Application
         Utils.RegisterAssembly(); // register export types
         Serilog.Log.Logger = new LoggerConfiguration()
             .MinimumLevel.ControlledBy(AppHelper.LoggingLevelSwitch)
-            .WriteTo.Console(LogEventLevel.Information)
+            .WriteTo.Console(LogEventLevel.Debug)
             .CreateLogger();
         
         ConsoleHelper.ShowConsole();
         ConsoleHelper.HideConsole();
 
-        AppHelper.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Information;
+        AppHelper.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Debug;
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

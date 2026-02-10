@@ -29,6 +29,8 @@ public partial class ConfigViewModel : ViewModelBase
     [ObservableProperty] private bool _bOverridePackageVer; 
     [ObservableProperty] private string? _ue5Ver;
     [ObservableProperty] private string? _ue4Ver;
+    
+    [ObservableProperty] private string? _platform;
 
     [ObservableProperty] private bool _validConfig; // is valid config
     [ObservableProperty] private bool _configErrorBar;
@@ -46,12 +48,12 @@ public partial class ConfigViewModel : ViewModelBase
         _bOverridePackageVer = false;
 
 #if DEBUG
-        UnrealVersion = "GAME_UE5_6";
-        Directories.Add("H:\\Games\\Fortnite2\\FortniteGame\\Content\\Paks");
-        UsmapPath =
-            "C:\\Users\\Minshu\\Downloads\\35.20-42911808-Windows_oo.usmap";
-        // _ue4Ver = "522 - CORRECT_LICENSEE_FLAG";
-        // _ue5Ver = "1003 - OPTIONAL_RESOURCES";
+        UnrealVersion = "GAME_UE5_0";
+        Directories.Add("F:\\Fortnite Versions\\19.10\\FortniteGame\\Content\\Paks");
+        UsmapPath = "C:\\Users\\Minshu\\Downloads\\19.10_oo.usmap";
+        _ue4Ver = "522 - CORRECT_LICENSEE_FLAG";
+        _ue5Ver = "1000 - INITIAL_VERSION";
+        _platform = "0 - DesktopMobile";
 #endif
     }
 
@@ -261,6 +263,11 @@ public partial class ConfigViewModel : ViewModelBase
             ConfigErrors = string.Join("\n", errors);
         }
 
+        if (Platform == null)
+        {
+            return false;
+        }
+
         if (UnrealVersion == null)
         {
             return false;
@@ -292,20 +299,23 @@ public partial class ConfigViewModel : ViewModelBase
     {
         Trace.Assert(IsValidConfig());
         VersionContainer version;
+
+        var platform = int.Parse(Platform!.Split(" - ")[0]);
+
         if (BOverridePackageVer)
         {
-            var UE4Ver = Ue4Ver == "AUTOMATIC_VERSION" ? "0" : Ue4Ver.Split(" - ")[0];
-            var UE5Ver = Ue5Ver == "AUTOMATIC_VERSION" ? "0" : Ue5Ver.Split(" - ")[0];
+            var UE4Ver = Ue4Ver == "AUTOMATIC_VERSION" ? "0" : Ue4Ver!.Split(" - ")[0];
+            var UE5Ver = Ue5Ver == "AUTOMATIC_VERSION" ? "0" : Ue5Ver!.Split(" - ")[0];
             
             var v = new FPackageFileVersion(int.Parse(UE4Ver), int.Parse(UE5Ver));
             version = new VersionContainer((EGame)Enum.Parse(typeof(EGame), UnrealVersion!),
-                ETexturePlatform.DesktopMobile, v);
+                (ETexturePlatform)platform, v);
         }
         else
         {
-            version = new VersionContainer((EGame)Enum.Parse(typeof(EGame), UnrealVersion));
+            version = new VersionContainer((EGame)Enum.Parse(typeof(EGame), UnrealVersion), (ETexturePlatform)platform);
         }
-        
+
         return new Config()
         {
 #pragma warning disable CS8604 // Possible null reference argument.

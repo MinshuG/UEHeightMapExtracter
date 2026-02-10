@@ -1,10 +1,15 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Versions;
+using HeightMapExtractor;
+using HeightMapExtractorGUI.Models;
 
 namespace HeightMapExtractorGUI.Views;
 
@@ -50,6 +55,17 @@ public partial class ConfigView : UserControl
             UE5ObjectVersion.Items.Add($"{(uint) ue5VersionsValues[i]} - {ue5Versions[i]}");
         }
         #endregion
+
+        #region Platform
+
+        var platforms = Enum.GetNames(typeof(ETexturePlatform));
+        var platformsValues = Enum.GetValues<ETexturePlatform>();
+        for (var i = 0; i < platforms.Length; i++)
+        {
+            string description = ((ETexturePlatform)platformsValues[i]).DescriptionAttr();
+            PlatformComboBox.Items.Add($"{(uint) platformsValues[i]} - {description}");
+        }
+
+        #endregion
     }
-    
 }

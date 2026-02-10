@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.ComponentModel;
+using System.Reflection;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.UObject;
@@ -72,5 +73,19 @@ public static class Utils
     public static void RegisterAssembly()
     {
         // ObjectTypeRegistry.RegisterEngine(typeof(AFortWorldSettings).Assembly);
+    }
+    
+    // Source - https://stackoverflow.com/a/10986749
+    // Posted by Irish
+    // Retrieved 2026-02-10, License - CC BY-SA 3.0
+    public static string DescriptionAttr<T>(this T source)
+    {
+        FieldInfo fi = source.GetType().GetField(source.ToString());
+
+        DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(
+            typeof(DescriptionAttribute), false);
+
+        if (attributes != null && attributes.Length > 0) return attributes[0].Description;
+        else return source.ToString();
     }
 }

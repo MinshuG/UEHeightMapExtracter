@@ -3,6 +3,7 @@ using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.MappingsProvider;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Versions;
 using Newtonsoft.Json;
@@ -49,7 +50,7 @@ static class Program
         }
 
         var provider = new DefaultFileProvider(config.PaksDirectory, SearchOption.AllDirectories, true,
-            new VersionContainer(config.Game, optionOverrides: config.OptionsOverrides));
+            new VersionContainer(config.Game, optionOverrides: config.OptionsOverrides, platform: config.TexturePlatform));
         provider.Initialize();
 
         var keysToSubmit = new Dictionary<FGuid, FAesKey>();
@@ -154,6 +155,8 @@ public class Config {
     public string PaksDirectory = "";
     [JsonProperty("UEVersion")]
     public EGame Game = EGame.GAME_UE4_LATEST;
+    public ETexturePlatform TexturePlatform = ETexturePlatform.DesktopMobile;
+
     public Dictionary<string, bool> OptionsOverrides = new Dictionary<string, bool>();
     public List<EncryptionKey> EncryptionKeys = new();
     public bool bScanSubLevels = true;
