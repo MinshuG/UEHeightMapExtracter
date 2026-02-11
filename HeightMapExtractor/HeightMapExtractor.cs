@@ -45,7 +45,8 @@ public class HeightMapExtractor
 
     public void ProcessWorld(string worldPath, TreeNode<string>? loadedLevels)
     {
-        if (!_provider.TryLoadPackage(worldPath, out IPackage worldpkg)) return;
+        // remove object name from path if it exists, we only want the package path for loading
+        if (!_provider.TryLoadPackage(worldPath.SubstringBeforeLast('.'), out IPackage worldpkg)) return;
 
         var world = worldpkg.LoadExportOfType<UWorld>();
         if (world == null) return;
