@@ -111,6 +111,8 @@ public partial class MainAppViewModel: ViewModelBase
     [ObservableProperty]
     private bool _canClickExtract;
 
+    public ConfigViewModel ConfigViewModel = null!;
+
     public MainAppViewModel()
     {
         GameFiles = new BulkObservableCollection<MyTreeViewItem>();
@@ -254,5 +256,17 @@ public partial class MainAppViewModel: ViewModelBase
         {
             ConsoleHelper.HideConsole();
         }
+    }
+
+    [RelayCommand]
+    private void GoBackToConfig()
+    {
+        if (Design.IsDesignMode) return;
+        
+        // Dispose the file provider
+        MyFileProvider.Destroy();
+        
+        // Navigate back to config view
+        ConfigViewModel._mainWindowViewModel.ContentView = ConfigViewModel;
     }
 }

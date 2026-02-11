@@ -36,7 +36,7 @@ public partial class ConfigViewModel : ViewModelBase
     [ObservableProperty] private bool _configErrorBar;
     [ObservableProperty] private string _configErrors;
     
-    private MainWindowViewModel _mainWindowViewModel = null!;
+    public MainWindowViewModel _mainWindowViewModel = null!;
 
     public ConfigViewModel(MainWindowViewModel mainWindowViewModel)
     {
@@ -201,6 +201,8 @@ public partial class ConfigViewModel : ViewModelBase
             context.SetProgressText("Populating TreeView...");
             {
                 var mainView = new MainAppViewModel();
+                mainView.ConfigViewModel = this;
+
                 // await Task.Run(() => mainView.PopulateTreeView(fileProvider.Files));
                 _mainWindowViewModel.ContentView = mainView;
             }

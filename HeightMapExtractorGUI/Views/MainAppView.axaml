@@ -28,6 +28,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <TextBox x:Name="SearchInput" Grid.Column="0"
@@ -45,6 +46,12 @@
                           IsEnabled="True" Command="{Binding ConsoleToggleCommand}" IsChecked="{Binding ConsoleStatus}" Margin="0 0 0 0" IsVisible="{Binding CanOpenConsole}">
                 <controls:FAPathIcon Margin="2" MaxHeight="18" Data="m 32 -32 q -6.6 0 -11.3 -4.7 t -4.7 -11.3 v -96 q 0 -6.6 4.7 -11.3 t 11.3 -4.7 h 128 q 6.6 0 11.3 4.7 t 4.7 11.3 v 96 q 0 6.6 -4.7 11.3 t -11.3 4.7 h -128 z m 0 -16 h 128 v -80 h -128 v 80 z m 28 -8 l -11.2 -11.2 l 20.6 -20.8 l -20.8 -20.8 l 11.4 -11.2 l 32 32 l -32 32 z m 36 0 v -16 h 48 v 16 h -48 z"/>
             </ToggleButton>
+            <Button Grid.Column="2" Margin="8 0 0 0" Command="{Binding GoBackToConfigCommand}" IsEnabled="{Binding !IsExtracting}">
+                <controls:SymbolIcon Symbol="Refresh" FontSize="20"/>
+                <ToolTip.Tip>
+                    <TextBlock Text="Go Back To Config"/>
+                </ToolTip.Tip>
+            </Button>
         </Grid>
 
         <Grid Grid.Row="1" Margin="0 10 0 0">
