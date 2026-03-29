@@ -35,7 +35,7 @@ public partial class ConfigViewModel : ViewModelBase
     [ObservableProperty] private bool _validConfig; // is valid config
     [ObservableProperty] private bool _configErrorBar;
     [ObservableProperty] private string _configErrors;
-    
+
     public MainWindowViewModel _mainWindowViewModel = null!;
 
     public ConfigViewModel(MainWindowViewModel mainWindowViewModel)

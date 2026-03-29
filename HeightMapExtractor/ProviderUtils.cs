@@ -56,45 +56,23 @@ public static class ProviderUtils
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsExportTypeCompatible(Package pkg, FObjectExport export, IEnumerable<Type> types) // For Package
     {
-        var obj = StolenConstructObject(pkg.ResolvePackageIndex(export.ClassIndex)?.Object?.Value as UStruct, pkg);
+        var obj = StolenConstructObject(pkg.ResolvePackageIndex(export.ClassIndex), pkg);
         return types.Any(x => x.IsInstanceOfType(obj));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsExportTypeCompatible(IoPackage pkg, FExportMapEntry export, IEnumerable<Type> types) // For IoPackage
     {
-        var obj = StolenConstructObject(pkg.ResolveObjectIndex(export.ClassIndex)?.Object?.Value as UStruct, pkg);
+        var obj = StolenConstructObject(pkg.ResolveObjectIndex(export.ClassIndex), pkg);
         return types.Any(x => x.IsInstanceOfType(obj));
     }
 
-    internal static UObject StolenConstructObject(UStruct? struc)
-    {
-        UObject? obj = null;
-        var current = struc;
-        while (current != null) // Traverse up until a known one is found
-        {
-            if (current is UClass scriptClass)
-            {
-                // We know this is a class defined in code at this point
-                obj = scriptClass.ConstructObject(EObjectFlags.RF_NoFlags);
-                if (obj != null)
-                    break;
-            }
-
-            current = current.SuperStruct?.Load<UStruct>();
-        }
-
-        obj ??= new UObject();
-        obj.Class = struc;
-        obj.Flags |= EObjectFlags.RF_WasLoaded;
-        return obj;
-    }
-
-    public static UObject StolenConstructObject(UStruct? struc, IPackage? owner, EObjectFlags flags = EObjectFlags.RF_NoFlags)
+    internal static UObject StolenConstructObject(ResolvedObject? struc, IPackage? owner = null, EObjectFlags flags = EObjectFlags.RF_NoFlags)
     {
         UObject? obj = null;
         var mappings = owner?.Mappings;
-        var current = struc;
+        var current = struc?.Object?.Value as UStruct;
+
         while (current != null) // Traverse up until a known one is found
         {
             if (current is UClass scriptClass)
@@ -112,7 +90,7 @@ public static class ProviderUtils
             {
                 // added guard for infinite loop
                 if (string.IsNullOrEmpty(structMappings.SuperType) || previous.Name == structMappings.SuperType) break;
-                current = new UScriptClass(structMappings.SuperType) ;
+                current = new UScriptClass(structMappings.SuperType);
             }
         }
 
@@ -121,7 +99,7 @@ public static class ProviderUtils
         obj.Flags |= EObjectFlags.RF_WasLoaded;
         return obj;
     }
-    
+
     public static T? LoadExportOfType<T>(this IPackage pkg) where T : UObject
     {
         if (pkg is Package package)
